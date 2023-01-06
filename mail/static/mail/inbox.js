@@ -1,5 +1,3 @@
-
-
 document.addEventListener('DOMContentLoaded', function() {
 
   // Use buttons to toggle between views
@@ -32,6 +30,17 @@ function load_mailbox(mailbox) {
 
   // Show the mailbox name
   document.querySelector('#emails-view').value = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
+  /*fetch(`/emails/${mailbox}`)
+  .then(response => response.json())
+  .then(emails => {
+      // Print emails
+    console.log(emails);
+    emails.forEach(mail => {
+      const element = document.createElement('div');
+      element.innerHTML = `${mail.sender} ${mail.subject} ${mail.timestamp}`;
+      document.querySelector('#emails-view').append(element);
+    });
+  });*/
 }
 
 function send_mail(event){
@@ -50,12 +59,12 @@ function send_mail(event){
   })
   .then(response => response.json())
   .then(result => {
-      // Print result
-      console.log(result);
-      if(result.message){
-        load_mailbox('sent');
-      }else{
-        alert(result.error);
-      }
+    // Print result
+    console.log(result);
+    if(result.message){
+      load_mailbox('sent');
+    }else{
+      alert(result.error);
+    }
   });
 }
