@@ -41,7 +41,7 @@ function load_mailbox(mailbox) {
       const element = document.createElement('div');
       element.className= "list-group-item";
       if(mailbox === "inbox"){
-        element.innerHTML = `<p">From: <span style="font-weight: bold">${mail.sender}</span>    &emsp;<span>${mail.subject}</p>
+        element.innerHTML = `<p>From: <span style="font-weight: bold">${mail.sender}</span>    &emsp;<span>${mail.subject}</p>
                             <p>${mail.timestamp}</p>`;
       }else if(mailbox === "sent"){
         element.innerHTML = `<p">To: <span style="font-weight: bold">${mail.recipients[0]}</span>    &emsp;<span>${mail.subject}</p>
