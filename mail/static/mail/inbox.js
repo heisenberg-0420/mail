@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
   document.querySelector('#compose').addEventListener('click', compose_email);
   document.querySelector('#compose-form').onsubmit = send_mail;
+  
   // By default, load the inbox
   load_mailbox('inbox');
 });
@@ -30,25 +31,36 @@ function load_mailbox(mailbox) {
 
   // Show the mailbox name
   document.querySelector('#emails-view').value = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
-  /*fetch(`/emails/${mailbox}`)
+  document.querySelector('#emails-view').innerHTML = '';
+  fetch(`/emails/${mailbox}`)
   .then(response => response.json())
   .then(emails => {
       // Print emails
     console.log(emails);
     emails.forEach(mail => {
       const element = document.createElement('div');
-      element.innerHTML = `${mail.sender} ${mail.subject} ${mail.timestamp}`;
+      element.className= "list-group-item";
+      if(mailbox === "inbox"){
+        element.innerHTML = `<p">From: <span style="font-weight: bold">${mail.sender}</span>    &emsp;<span>${mail.subject}</p>
+                            <p>${mail.timestamp}</p>`;
+      }else if(mailbox === "sent"){
+        element.innerHTML = `<p">To: <span style="font-weight: bold">${mail.recipients[0]}</span>    &emsp;<span>${mail.subject}</p>
+                            <p>${mail.timestamp}</p>`;
+      }else{
+        element.innerHTML = `<p>From: <span style="font-weight: bold">${mail.sender}&ensp; To: <span style="font-weight: bold">${mail.recipients[0]}</span>    &emsp;<span>${mail.subject}</p>
+                            <p>${mail.timestamp}</p>`;
+      }
       document.querySelector('#emails-view').append(element);
     });
-  });*/
+  });
 }
 
 function send_mail(event){
   event.preventDefault();
 
-  let recipients = document.querySelector('#compose-recipients');
-  let subject = document.querySelector('#compose-subject');
-  let body = document.querySelector('#compose-body');
+  const recipients = document.querySelector('#compose-recipients');
+  const subject = document.querySelector('#compose-subject');
+  const body = document.querySelector('#compose-body');
   fetch('/emails', {
     method: 'POST',
     body: JSON.stringify({
