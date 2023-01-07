@@ -16,6 +16,7 @@ function compose_email() {
   // Show compose view and hide other views
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
+  document.querySelector('#detail-view').style.display = 'none';
 
   // Clear out composition fields
   document.querySelector('#compose-recipients').value = '';
@@ -23,11 +24,32 @@ function compose_email() {
   document.querySelector('#compose-body').value = '';
 }
 
+function view_email(id){
+  document.querySelector('#detail-view').innerHTML = '';
+  fetch(`/emails/${id}`)
+  .then(response => response.json())
+  .then(mail_details => {
+    document.querySelector('#emails-view').style.display = 'none';
+    document.querySelector('#compose-view').style.display = 'none';
+    document.querySelector('#detail-view').style.display = 'block';
+    const element = document.createElement('div');
+    element.innerHTML = 
+      `<p><b>From: </b>${mail_details.sender}</p>
+      <p><b>To: </b>${mail_details.recipients[0]}</p>
+      <p><b>Subject: </b>${mail_details.subject}</p>
+      <p><b>Timestamp: </b>${mail_details.timestamp}</p>
+      <hr>
+      <p>${mail_details.body}</p>`;
+    document.querySelector('#detail-view').append(element);
+  });
+}
+
 function load_mailbox(mailbox) {
   
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
+  document.querySelector('#detail-view').style.display = 'none';
 
   // Show the mailbox name
   document.querySelector('#emails-view').value = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
@@ -39,7 +61,7 @@ function load_mailbox(mailbox) {
     console.log(emails);
     emails.forEach(mail => {
       const element = document.createElement('div');
-      element.className= "list-group-item";
+      element.className= mail.read ? 'list-group-item read' : 'list-group-item';
       if(mailbox === "inbox"){
         element.innerHTML = `<p>From: <span style="font-weight: bold">${mail.sender}</span>    &emsp;<span>${mail.subject}</p>
                             <p>${mail.timestamp}</p>`;
@@ -49,6 +71,9 @@ function load_mailbox(mailbox) {
       }else{
         element.innerHTML = `<p>From: <span style="font-weight: bold">${mail.sender}&ensp; To: <span style="font-weight: bold">${mail.recipients[0]}</span>    &emsp;<span>${mail.subject}</p>
                             <p>${mail.timestamp}</p>`;
+      }
+      element.onclick = function(){
+        view_email(mail.id);
       }
       document.querySelector('#emails-view').append(element);
     });
